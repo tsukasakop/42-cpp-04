@@ -5,8 +5,11 @@
 #include <iostream>
 
 class WrongAnimal {
-protected:
+private:
 	std::string type;
+
+protected:
+	WrongAnimal(const std::string& animalType);
 
 public:
 	WrongAnimal();
