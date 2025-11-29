@@ -5,8 +5,11 @@
 #include <iostream>
 
 class Brain {
+public:
+	static const int kNumIdeas = 100;
+
 private:
-	std::string ideas[100];
+	std::string ideas[kNumIdeas];
 
 public:
 	Brain();
