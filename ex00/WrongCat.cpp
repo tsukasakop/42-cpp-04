@@ -1,7 +1,6 @@
 #include "WrongCat.hpp"
 
-WrongCat::WrongCat() {
-	this->type = "WrongCat";
+WrongCat::WrongCat() : WrongAnimal("WrongCat") {
 	std::cout << "WrongCat default constructor called" << std::endl;
 }
 
