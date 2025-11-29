@@ -27,6 +27,7 @@ int main()
 			std::cout << cat.getType() << " " << std::endl;
 			std::cout << dog.getType() << " " << std::endl;
 			std::cout << meta.getType() << " " << std::endl;
+
 			std::cout << "\n--- Making sounds ---" << std::endl;
 			cat.makeSound();
 			dog.makeSound();
@@ -47,6 +48,34 @@ int main()
 			std::cout << "\n--- Making sounds (should output WrongAnimal sound) ---" << std::endl;
 			wrongCat.makeSound();
 			wrongMeta.makeSound();
+		}
+	}
+	{
+		std::cout << "\n=== CASE3: Testing copy instance polymorphism ===" << std::endl;
+		TestUtils::ScopedSilencer silencer;
+		const Cat cat;
+		const Animal clone(cat);
+		{
+			TestUtils::ScopedUnsilencer unsilencer;
+			std::cout << "\n--- Type information ---" << std::endl;
+			std::cout << clone.getType() << " " << std::endl;
+			
+			std::cout << "\n--- Making sounds (should output WrongAnimal sound) ---" << std::endl;
+			clone.makeSound();
+		}
+	}
+	{
+		std::cout << "\n=== CASE4: Testing assignment instance polymorphism ===" << std::endl;
+		TestUtils::ScopedSilencer silencer;
+		const Cat cat;
+		const Animal clone = cat;
+		{
+			TestUtils::ScopedUnsilencer unsilencer;
+			std::cout << "\n--- Type information ---" << std::endl;
+			std::cout << clone.getType() << " " << std::endl;
+			
+			std::cout << "\n--- Making sounds (should output WrongAnimal sound) ---" << std::endl;
+			clone.makeSound();
 		}
 	}
 	return 0;
