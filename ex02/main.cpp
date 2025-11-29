@@ -2,77 +2,115 @@
 #include "Dog.hpp"
 #include "Cat.hpp"
 #include "Brain.hpp"
+#include "TestUtils.hpp"
+#include <iomanip>
+
+template <typename T>
+void showInstanceInfo(const std::string name, const T& animal) {
+	std::cout << name << std::endl;
+	std::cout << " - typeid: " << typeid(animal).name() << std::endl;
+	std::cout << " - Type  : " << animal.getType() << std::endl;
+	std::cout << " - Sound : ";
+	animal.makeSound();
+	std::cout << std::endl;
+}
+
+void showBrainIdeas(const Brain* brain) {
+	std::cout << " - Brain Address: " << brain << std::endl;
+	std::cout << " - Brain Ideas: " << std::endl;
+	for (int i = 0; i < 100; ++i) {
+		if (!brain->getIdea(i).empty()) {
+			std::cout << "  [" << i << "]: " << brain->getIdea(i) << std::endl;
+		}
+	}
+	std::cout << std::endl;
+}
 
 int main()
 {
-	std::cout << "=== Testing abstract Animal class ===" << std::endl;
-	std::cout << "Note: Cannot instantiate Animal directly (it's abstract)" << std::endl;
-	
-	// This should cause a compilation error if uncommented:
-	// const Animal* meta = new Animal();
-	
-	std::cout << "\n=== Creating Dog and Cat through Animal pointers ===" << std::endl;
-	const Animal* j = new Dog();
-	const Animal* i = new Cat();
-
-	std::cout << "\n--- Type information ---" << std::endl;
-	std::cout << "Dog type: " << j->getType() << std::endl;
-	std::cout << "Cat type: " << i->getType() << std::endl;
-
-	std::cout << "\n--- Making sounds ---" << std::endl;
-	i->makeSound(); // will output the cat sound!
-	j->makeSound(); // will output the dog sound!
-
-	std::cout << "\n--- Deleting animals ---" << std::endl;
-	delete j; // should not create a leak
-	delete i;
-
-	std::cout << "\n\n=== Testing array of Animals ===" << std::endl;
-	const int arraySize = 6;
-	Animal* animals[arraySize];
-
-	std::cout << "--- Creating Dogs ---" << std::endl;
-	for (int idx = 0; idx < arraySize / 2; idx++) {
-		animals[idx] = new Dog();
+	{
+		std::cout << "=== CASE0: Testing constructor/destructor ===" << std::endl;
+		TestUtils::execOrthodoxCanonicalFormFunctions<Cat>();
+		TestUtils::execOrthodoxCanonicalFormFunctions<Dog>();
+		TestUtils::execOrthodoxCanonicalFormFunctions<Brain>();
 	}
-
-	std::cout << "\n--- Creating Cats ---" << std::endl;
-	for (int idx = arraySize / 2; idx < arraySize; idx++) {
-		animals[idx] = new Cat();
+	{
+		std::cout << "=== CASE1: Testing correct polymorphism ===" << std::endl;
+		TestUtils::ScopedSilencer silencer;
+		const Animal &cat = Cat();
+		const Animal &dog = Dog();
+		{
+			TestUtils::ScopedUnsilencer unsilencer;
+			showInstanceInfo("const Animal &cat = Cat();", cat);
+			showInstanceInfo("const Animal &dog = Dog();", dog);
+		}
 	}
-
-	std::cout << "\n--- Making sounds from array ---" << std::endl;
-	for (int idx = 0; idx < arraySize; idx++) {
-		std::cout << "Animal[" << idx << "]: ";
-		animals[idx]->makeSound();
+	{
+		std::cout << "=== CASE2: Testing empty brain ===" << std::endl;
+		TestUtils::ScopedSilencer silencer;
+		const Cat cat;
+		const Brain* catBrain = cat.getBrain();
+		const Dog dog;
+		const Brain* dogBrain = dog.getBrain();
+		{
+			TestUtils::ScopedUnsilencer unsilencer;
+			showInstanceInfo("const Cat cat;", cat);
+			showBrainIdeas(catBrain);
+			showInstanceInfo("const Dog dog;", dog);
+			showBrainIdeas(dogBrain);
+		}
 	}
-
-	std::cout << "\n--- Deleting all animals ---" << std::endl;
-	for (int idx = 0; idx < arraySize; idx++) {
-		delete animals[idx];
+	{
+		std::cout << "=== CASE3: Testing tiny brain ===" << std::endl;
+		TestUtils::ScopedSilencer silencer;
+		Cat cat;
+		Brain* catBrain = cat.getBrain();
+		catBrain->setIdea(0, "I want fish.");
+		catBrain->setIdea(1, "I want to play.");
+		Dog dog;
+		Brain* dogBrain = dog.getBrain();
+		dogBrain->setIdea(99, "I want a walk.");
+		dogBrain->setIdea(50, "I want to fetch the ball.");
+		{
+			TestUtils::ScopedUnsilencer unsilencer;
+			showInstanceInfo("const Cat cat;", cat);
+			showBrainIdeas(catBrain);
+			showInstanceInfo("const Dog dog;", dog);
+			showBrainIdeas(dogBrain);
+		}
 	}
-
-	std::cout << "\n\n=== Testing deep copy ===" << std::endl;
-	Dog* originalDog = new Dog();
-	originalDog->getBrain()->setIdea(0, "Chase the mailman");
-	originalDog->getBrain()->setIdea(1, "Dig a hole");
-
-	std::cout << "\n--- Creating copy of Dog ---" << std::endl;
-	Dog* copiedDog = new Dog(*originalDog);
-
-	std::cout << "\n--- Verifying deep copy ---" << std::endl;
-	originalDog->getBrain()->setIdea(0, "Sleep all day");
-	
-	std::cout << "Original Dog idea[0]: " << originalDog->getBrain()->getIdea(0) << std::endl;
-	std::cout << "Copied Dog idea[0]: " << copiedDog->getBrain()->getIdea(0) << std::endl;
-
-	if (originalDog->getBrain()->getIdea(0) != copiedDog->getBrain()->getIdea(0)) {
-		std::cout << "SUCCESS: Deep copy working correctly!" << std::endl;
+	{
+		std::cout << "=== CASE3: Testing deep copy ===" << std::endl;
+		TestUtils::ScopedSilencer silencer;
+		Cat cat;
+		cat.getBrain()->setIdea(0, "I want fish.");
+		const Cat clone(cat);
+		cat.getBrain()->setIdea(0, "I want beef.");
+		{
+			TestUtils::ScopedUnsilencer unsilencer;
+			showInstanceInfo("const Cat cat;", cat);
+			showBrainIdeas(cat.getBrain());
+			showInstanceInfo("const Cat &clone = cat;", clone);
+			showBrainIdeas(clone.getBrain());
+		}
 	}
-
-	std::cout << "\n--- Deleting Dogs ---" << std::endl;
-	delete originalDog;
-	delete copiedDog;
-
+	{
+		std::cout << "=== CASE4: Testing memory leak ===" << std::endl;
+		TestUtils::ScopedSilencer silencer;
+		{
+			const int numAnimals = 100;
+			Animal* animals[numAnimals];
+			for (int i = 0; i < numAnimals; i++) {
+				if (i % 2 == 0) {
+					animals[i] = new Cat();
+				} else {
+					animals[i] = new Dog();
+				}
+			}
+			for (int i = 0; i < numAnimals; i++) {
+				delete animals[i];
+			}
+		}
+	}
 	return 0;
 }

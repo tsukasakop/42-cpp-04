@@ -4,6 +4,10 @@ WrongAnimal::WrongAnimal() : type("WrongAnimal") {
 	std::cout << "WrongAnimal default constructor called" << std::endl;
 }
 
+WrongAnimal::WrongAnimal(const std::string& animalType) : type(animalType) {
+	std::cout << "WrongAnimal parameterized constructor called" << std::endl;
+}
+
 WrongAnimal::WrongAnimal(const WrongAnimal& other) : type(other.type) {
 	std::cout << "WrongAnimal copy constructor called" << std::endl;
 }
