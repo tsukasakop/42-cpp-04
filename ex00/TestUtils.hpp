@@ -42,13 +42,13 @@ namespace TestUtils {
 
   template <typename T>
   void execOrthodoxCanonicalFormFunctions() {
-    std::cout << "\n=== Target Class: " << typeid(T).name() << " ===" << std::endl;
+    std::cout << "=== Target Class: " << typeid(T).name() << " ===" << std::endl;
     {
-      std::cout << "\n-- Default constructor --" << std::endl;
+      std::cout << "-- Default constructor --" << std::endl;
       T defaultInstance;
     }
     {
-      std::cout << "\n-- Copy constructor --" << std::endl;
+      std::cout << std::endl << "-- Copy constructor --" << std::endl;
       ScopedSilencer silencer;
       T defaultInstance;
       {
@@ -57,7 +57,7 @@ namespace TestUtils {
       }
     }
     {
-      std::cout << "\n-- Copy assignment operator --" << std::endl;
+      std::cout << std::endl << "-- Copy assignment operator --" << std::endl;
       ScopedSilencer silencer;
       T defaultInstance;
       T copyInstance;
@@ -66,6 +66,7 @@ namespace TestUtils {
         copyInstance = defaultInstance;
       }
     }
+    std::cout << std::endl;
   }
 }
 

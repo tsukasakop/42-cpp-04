@@ -5,10 +5,20 @@
 #include "WrongCat.hpp"
 #include "TestUtils.hpp"
 
+template <typename T>
+void showInstanceInfo(const std::string name, const T& animal) {
+	std::cout << name << std::endl;
+	std::cout << " - typeid: " << typeid(animal).name() << std::endl;
+	std::cout << " - Type  : " << animal.getType() << std::endl;
+	std::cout << " - Sound : ";
+	animal.makeSound();
+	std::cout << std::endl;
+}
+
 int main()
 {
 	{
-		std::cout << "\n=== CASE0: Testing constructor/destructor ===" << std::endl;
+		std::cout << "=== CASE0: Testing constructor/destructor ===" << std::endl;
 		TestUtils::execOrthodoxCanonicalFormFunctions<Animal>();
 		TestUtils::execOrthodoxCanonicalFormFunctions<Cat>();
 		TestUtils::execOrthodoxCanonicalFormFunctions<Dog>();
@@ -16,66 +26,66 @@ int main()
 		TestUtils::execOrthodoxCanonicalFormFunctions<WrongCat>();
 	}
 	{
-		std::cout << "\n=== CASE1: Testing correct polymorphism ===" << std::endl;
+		std::cout << "=== CASE1: Testing correct polymorphism ===" << std::endl;
 		TestUtils::ScopedSilencer silencer;
-		const Animal cat = Cat();
-		const Animal dog = Dog();
-		const Animal meta = Animal();
+		const Animal &cat = Cat();
+		const Animal &dog = Dog();
+		const Animal &animal = Animal();
 		{
 			TestUtils::ScopedUnsilencer unsilencer;
-			std::cout << "\n--- Type information ---" << std::endl;
-			std::cout << cat.getType() << " " << std::endl;
-			std::cout << dog.getType() << " " << std::endl;
-			std::cout << meta.getType() << " " << std::endl;
-
-			std::cout << "\n--- Making sounds ---" << std::endl;
-			cat.makeSound();
-			dog.makeSound();
-			meta.makeSound();
+			showInstanceInfo("const Animal &cat = Cat();", cat);
+			showInstanceInfo("const Animal &dog = Dog();", dog);
+			showInstanceInfo("const Animal &animal = Animal();", animal);
 		}
 	}
 	{
-		std::cout << "\n=== CASE2: Testing wrong polymorphism ===" << std::endl;
+		std::cout << "=== CASE2: Testing wrong polymorphism ===" << std::endl;
 		TestUtils::ScopedSilencer silencer;
-		const WrongAnimal wrongCat = WrongCat();
-		const WrongAnimal wrongMeta = WrongAnimal();
+		const WrongAnimal &wrongCat = WrongCat();
+		const WrongAnimal &wrongAnimal = WrongAnimal();
 		{
 			TestUtils::ScopedUnsilencer unsilencer;
-			std::cout << "\n--- Type information ---" << std::endl;
-			std::cout << wrongCat.getType() << " " << std::endl;
-			std::cout << wrongMeta.getType() << " " << std::endl;
-			
-			std::cout << "\n--- Making sounds (should output WrongAnimal sound) ---" << std::endl;
-			wrongCat.makeSound();
-			wrongMeta.makeSound();
+			showInstanceInfo("const WrongCat wrongCat;", wrongCat);
+			showInstanceInfo("const WrongAnimal &wrongAnimal = wrongCat;", wrongAnimal);
 		}
 	}
 	{
-		std::cout << "\n=== CASE3: Testing copy instance polymorphism ===" << std::endl;
+		std::cout << "=== CASE3: Testing copy instance polymorphism ===" << std::endl;
 		TestUtils::ScopedSilencer silencer;
 		const Cat cat;
-		const Animal clone(cat);
+		const Animal &clone(cat);
 		{
 			TestUtils::ScopedUnsilencer unsilencer;
-			std::cout << "\n--- Type information ---" << std::endl;
-			std::cout << clone.getType() << " " << std::endl;
-			
-			std::cout << "\n--- Making sounds (should output WrongAnimal sound) ---" << std::endl;
-			clone.makeSound();
+			showInstanceInfo("const Cat cat;", cat);
+			showInstanceInfo("const Animal &clone = cat;", clone);
 		}
 	}
 	{
-		std::cout << "\n=== CASE4: Testing assignment instance polymorphism ===" << std::endl;
+		std::cout << "=== CASE4: Testing assignment instance polymorphism ===" << std::endl;
 		TestUtils::ScopedSilencer silencer;
 		const Cat cat;
-		const Animal clone = cat;
+		const Animal &clone = cat;
 		{
 			TestUtils::ScopedUnsilencer unsilencer;
-			std::cout << "\n--- Type information ---" << std::endl;
-			std::cout << clone.getType() << " " << std::endl;
-			
-			std::cout << "\n--- Making sounds (should output WrongAnimal sound) ---" << std::endl;
-			clone.makeSound();
+			showInstanceInfo("const Cat cat;", cat);
+			showInstanceInfo("const Animal &clone = cat;", clone);
+		}
+	}
+	{
+		std::cout << "=== MEMO: Compare virtual/no-virtual x direct/reference ===" << std::endl;
+		TestUtils::ScopedSilencer silencer;
+		{
+			const WrongAnimal cat1 = WrongCat();
+			const Animal cat2 = Cat();
+			const WrongAnimal &cat3 = WrongCat();
+			const Animal &cat4 = Cat();
+			TestUtils::ScopedUnsilencer unsilencer;
+			{
+				showInstanceInfo("const WrongAnimal cat1 = WrongCat();", cat1);
+				showInstanceInfo("const Animal cat2 = Cat();", cat2);
+				showInstanceInfo("const WrongAnimal &cat3 = WrongCat();", cat3);
+				showInstanceInfo("const Animal &cat4 = Cat();", cat4);
+			}
 		}
 	}
 	return 0;
