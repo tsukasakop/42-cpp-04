@@ -4,6 +4,7 @@
 #include <string>
 #include <iostream>
 #include <cstddef> 
+#include <typeinfo>
 
 namespace TestUtils {
   class NullBuffer : public std::streambuf {
